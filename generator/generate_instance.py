@@ -24,6 +24,9 @@ packet_size = (1, 4)
 patient_number = 15
 patient_priority = (1, 4)
 
+requests_per_day = (1, 4)
+packet_requested = (1, 3)
+
 interdiction_probability = 0.25
 interdiction_duration = (1, 5)
 
@@ -99,6 +102,20 @@ priorities = {}
 for patient_index in range(patient_number):
     priorities["pat" + str(patient_index)] = random.randint(patient_priority[0], patient_priority[1])
 del patient_index
+
+requests = {}
+for day_index in range(day_number):
+    patient_amount = random.randint(requests_per_day[0], requests_per_day[1])
+    day_requests = dict()
+    for patient_index in range(patient_amount):
+        packet_amount = random.randint(packet_requested[0], packet_requested[1])
+        packet_indexes = random.sample(range(packet_number), packet_amount)
+        request = []
+        for packet_index in packet_indexes:
+            request.append("pkt" + str(packet_index))
+        day_requests["pat" + str(patient_index)] = request
+    requests["day" + str(day_index)] = day_requests
+del day_index, patient_amount, day_requests, patient_index, packet_amount, packet_indexes, packet_index
 
 care_unit_names = set()
 for operator_day in operator_days.values():
@@ -205,6 +222,8 @@ with open("packets.json", "w") as file:
     file.write(json.dumps(packets, indent=4, sort_keys=True))
 with open("priorities.json", "w") as file:
     file.write(json.dumps(priorities, indent=4, sort_keys=True))
+with open("requests.json", "w") as file:
+    file.write(json.dumps(requests, indent=4, sort_keys=True))
 with open("full_input.json", "w") as file:
     file.write(json.dumps(full_input, indent=4, sort_keys=True))
 
