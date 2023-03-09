@@ -64,9 +64,10 @@ for care_unit_name in care_unit_names:
                     break
                 less_program += "less(" + operator_name + ", " + str(operator["start"]) + ", " + str(operator["duration"]) + ").\n"
                 less_total_duration += operator["duration"]
-            if unsatisfiable:
+            if unsatisfiable or more_total_duration < less_total_duration:
                 continue
-            if more_total_duration < less_total_duration:
+            if len(less_operators) == 1:
+                lesser_days.append(less_day_name)
                 continue
             with open("input_program.lp", "w") as file:
                 file.write(more_program)
@@ -79,6 +80,7 @@ for care_unit_name in care_unit_names:
         if len(lesser_days) > 0:
             subsumption[more_day_name] = lesser_days
     subsumptions[care_unit_name] = subsumption
+del care_unit_name, care_unit_names, subsumption, more_day_name, more_operator_day, lesser_days, more_operators, more_program, more_total_duration, operator_name, operator, less_day_name, less_operator_day, less_operators, less_program, less_total_duration, unsatisfiable, at_least_one, more_operator
 
 if os.path.isfile("input_program.lp"):
     os.remove("input_program.lp")
