@@ -1,6 +1,3 @@
-more(a, 2, 10).
-less(b, 2, 10).
-
 { choose(Less, More) } :-
     less(Less, LessStart, LessDuration),
     more(More, MoreStart, MoreDuration),

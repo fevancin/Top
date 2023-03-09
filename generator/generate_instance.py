@@ -113,7 +113,9 @@ for day_index in range(day_number):
         request = []
         for packet_index in packet_indexes:
             request.append("pkt" + str(packet_index))
-        day_requests["pat" + str(patient_index)] = request
+        day_requests["pat" + str(patient_index)] = {
+            "packets": request
+        }
     requests["day" + str(day_index)] = day_requests
 del day_index, patient_amount, day_requests, patient_index, packet_amount, packet_indexes, packet_index
 
