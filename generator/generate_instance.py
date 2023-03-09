@@ -42,16 +42,6 @@ tolerance = (2, 6)
 existence_start = (1, 15)
 existence_duration = (5, 20)
 
-alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-def get_code(index):
-    alphabet_length = len(alphabet)
-    code = ""
-    while index >= 0:
-        index, remainder = index // alphabet_length - 1, index % alphabet_length
-        code = alphabet[remainder] + code
-    return code
-
 os.chdir(os.path.dirname(sys.argv[0]))
 os.chdir("..")
 if not os.path.isdir("instance"):
@@ -69,18 +59,18 @@ for day_index in range(day_number):
         care_unit = {}
         operator_amount = random.randint(care_unit_size[0], care_unit_size[1])
         for operator_index in range(operator_amount):
-            care_unit["op" + get_code(operator_index)] = {
+            care_unit["op" + str(operator_index)] = {
                 "start": random.randint(operator_start[0], operator_start[1]),
                 "duration": random.randint(operator_duration[0], operator_duration[1])
             }
-        operator_day["cu" + get_code(care_unit_index)] = care_unit
-    operator_days["day" + get_code(day_index)] = operator_day
+        operator_day["cu" + str(care_unit_index)] = care_unit
+    operator_days["day" + str(day_index)] = operator_day
 del day_index, operator_day, care_unit_index, care_unit, operator_amount, operator_index
 
 services = {}
 for service_index in range(service_number):
-    services["srv" + get_code(service_index)] = {
-        "careUnit": "cu" + get_code(random.randint(0, care_unit_number - 1)),
+    services["srv" + str(service_index)] = {
+        "careUnit": "cu" + str(random.randint(0, care_unit_number - 1)),
         "duration": random.randint(service_duration[0], service_duration[1]),
         "cost": random.randint(service_cost[0], service_cost[1])
     }
@@ -98,8 +88,8 @@ while packet_index < packet_number:
         packet = []
         service_indexes = random.sample(range(service_number), size)
         for service_index in service_indexes:
-            packet.append("srv" + get_code(service_index))
-        packets["pkt" + get_code(packet_index)] = packet
+            packet.append("srv" + str(service_index))
+        packets["pkt" + str(packet_index)] = packet
         packet_index += 1
     if size + 1 <= max_packet_size:
         size += 1
@@ -107,7 +97,7 @@ del packet_index, window, size, max_packet_size, packet, service_indexes
 
 priorities = {}
 for patient_index in range(patient_number):
-    priorities["pat" + get_code(patient_index)] = random.randint(patient_priority[0], patient_priority[1])
+    priorities["pat" + str(patient_index)] = random.randint(patient_priority[0], patient_priority[1])
 del patient_index
 
 care_unit_names = set()
@@ -133,10 +123,10 @@ for service_index in range(service_number):
     interdiction = dict()
     for other_service_index in range(service_number):
         if random.random() < interdiction_probability:
-            interdiction["srv" + get_code(other_service_index)] = random.randint(interdiction_duration[0], interdiction_duration[1])
+            interdiction["srv" + str(other_service_index)] = random.randint(interdiction_duration[0], interdiction_duration[1])
         else:
-            interdiction["srv" + get_code(other_service_index)] = 0
-    interdictions["srv" + get_code(service_index)] = interdiction
+            interdiction["srv" + str(other_service_index)] = 0
+    interdictions["srv" + str(service_index)] = interdiction
 del service_index, interdiction, other_service_index
 
 necessities = dict()
@@ -147,13 +137,13 @@ for service_index in range(service_number):
         necessity = dict()
         for necessity_index in necessity_indexes:
             start = random.randint(necessity_start[0], necessity_start[1])
-            necessity["srv" + get_code(necessity_index)] = [
+            necessity["srv" + str(necessity_index)] = [
                 start,
                 start + random.randint(necessity_duration[0], necessity_duration[1])
             ]
-        necessities["srv" + get_code(service_index)] = necessity
+        necessities["srv" + str(service_index)] = necessity
     else:
-        necessities["srv" + get_code(service_index)] = {}
+        necessities["srv" + str(service_index)] = {}
 del service_index, necessity_amount, necessity_indexes, necessity, necessity_index, start
 
 protocols = dict()
@@ -168,7 +158,7 @@ for patient_index in range(patient_number):
             packet_index = random.randint(0, packet_number - 1)
             start = random.randint(existence_start[0], existence_start[1])
             packet_list.append({
-                "pacekt_id": "pkt" + get_code(packet_index),
+                "pacekt_id": "pkt" + str(packet_index),
                 "start_date": random.randint(start_date[0], start_date[1]),
                 "freq": random.randint(frequency[0], frequency[1]),
                 "since": "start_date",
@@ -181,13 +171,13 @@ for patient_index in range(patient_number):
         iteration_amount = random.randint(iteration_number[0], iteration_number[1])
         iterations = {}
         for iteration_index in range(iteration_amount):
-            iterations["iter" + get_code(iteration_index)] = [
+            iterations["iter" + str(iteration_index)] = [
                 packet_list,
                 random.randint(initial_offset[0], initial_offset[1])
             ]
-        patient_protocols["prot" + get_code(protocol_index)] = iterations
+        patient_protocols["prot" + str(protocol_index)] = iterations
         protocol_index += 1
-    patient_name = "pat" + get_code(patient_index)
+    patient_name = "pat" + str(patient_index)
     patient_protocols["priority_weight"] = priorities[patient_name]
     protocols[patient_name] = patient_protocols
 del protocol_index, patient_index, protocol_amount, patient_protocols, packet_list, packet_amount, packet_index, start, iteration_amount, iterations, iteration_index, patient_name
