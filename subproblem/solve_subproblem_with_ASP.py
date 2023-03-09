@@ -141,6 +141,7 @@ for day_name, day_scheduled_services in scheduled_services.items():
         "notScheduledPackets": not_scheduled_packets,
         "unusedOperators": unused_operators
     }
+del day_name, day_scheduled_services, not_scheduled_packets, patient_name, patient, packet_name, is_packet_scheduled, service_name, is_service_scheduled, scheduled_service, unused_operators, care_unit_name, care_unit, operator_name, is_operator_used
 
 end_time = datetime.now()
 
