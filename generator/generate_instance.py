@@ -60,6 +60,8 @@ os.chdir("instance")
 
 random.seed(seed)
 
+start_time = datetime.now()
+
 operator_days = {}
 for day_index in range(day_number):
     operator_day = {}
@@ -160,8 +162,8 @@ for patient_index in range(patient_number):
     protocol_amount = random.randint(protocols_per_patient[0], protocols_per_patient[1])
     patient_protocols = dict()
     for _ in range(protocol_amount):
-        packet_list = []
         packet_amount = random.randint(packets_per_protocol[0], packets_per_protocol[1])
+        packet_list = []
         for _ in range(packet_amount):
             packet_index = random.randint(0, packet_number - 1)
             start = random.randint(existence_start[0], existence_start[1])
@@ -188,7 +190,7 @@ for patient_index in range(patient_number):
     patient_name = "pat" + get_code(patient_index)
     patient_protocols["priority_weight"] = priorities[patient_name]
     protocols[patient_name] = patient_protocols
-del protocol_index
+del protocol_index, patient_index, protocol_amount, patient_protocols, packet_list, packet_amount, packet_index, start, iteration_amount, iterations, iteration_index, patient_name
 
 full_input = {
     "datecode": datetime.now().strftime("%a-%d-%b-%Y-%H-%M-%S"),
@@ -203,6 +205,8 @@ full_input = {
     "pat_request": protocols
 }
 
+end_time = datetime.now()
+
 with open("operators.json", "w") as file:
     file.write(json.dumps(operator_days, indent=4, sort_keys=True))
 with open("services.json", "w") as file:
@@ -213,3 +217,6 @@ with open("priorities.json", "w") as file:
     file.write(json.dumps(priorities, indent=4, sort_keys=True))
 with open("full_input.json", "w") as file:
     file.write(json.dumps(full_input, indent=4, sort_keys=True))
+
+print("Creation of instance successfull. Data is in folder 'instance'")
+print("Time taken: " + str(end_time - start_time))
