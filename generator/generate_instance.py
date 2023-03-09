@@ -92,7 +92,7 @@ while packet_index < packet_number:
         service_indexes = random.sample(range(service_number), size)
         for service_index in service_indexes:
             packet.append("srv" + str(service_index))
-        packets["pkt" + str(packet_index)] = packet
+        packets["pkt" + str(packet_index)] = sorted(packet)
         packet_index += 1
     if size + 1 <= max_packet_size:
         size += 1
@@ -114,7 +114,7 @@ for day_index in range(day_number):
         for packet_index in packet_indexes:
             request.append("pkt" + str(packet_index))
         day_requests["pat" + str(patient_index)] = {
-            "packets": request
+            "packets": sorted(request)
         }
     requests["day" + str(day_index)] = day_requests
 del day_index, patient_amount, day_requests, patient_index, packet_amount, packet_indexes, packet_index
