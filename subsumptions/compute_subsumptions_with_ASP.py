@@ -74,7 +74,7 @@ for care_unit_name in care_unit_names:
                 file.write(less_program)
             with open("results.txt", "w") as file:
                 subprocess.run(["clingo", "input_program.lp", "subsumption_program.lp"], stdout=file, stderr=subprocess.DEVNULL)
-            with open("results.txt") as file:
+            with open("results.txt", "r") as file:
                 if file.read().find("UNSATISFIABLE") < 0:
                     lesser_days.append(less_day_name)
         if len(lesser_days) > 0:
