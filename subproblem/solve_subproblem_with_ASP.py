@@ -97,6 +97,7 @@ for day_name, day_requests in requests.items():
                 "careUnit": services[tokens[1]]["careUnit"],
                 "start": int(tokens[3])
             })
+    day_scheduled_services.sort(key=lambda s: s["patient"] + s["service"])
     scheduled_services[day_name] = day_scheduled_services
 del day_name, day_requests, day_operators, patient_names, packet_names, service_names, care_unit_names, operator_names, max_time, patient_name, patient, patient_doable, packet_name, is_packet_satisfiable, service_name, is_service_satisfiable, care_unit_name, operator_name, operator, operator_end_time, input_program, compound_name, day_scheduled_services
 
