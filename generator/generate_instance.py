@@ -45,6 +45,7 @@ tolerance = (2, 6)
 existence_start = (1, 15)
 existence_duration = (5, 20)
 
+# initial folder creation
 os.chdir(os.path.dirname(sys.argv[0]))
 os.chdir("..")
 if not os.path.isdir("instance"):
@@ -55,6 +56,8 @@ random.seed(seed)
 
 start_time = datetime.now()
 
+# creation of the operators for each care_unit and for each day
+# an operator is a couple [start, duration] of positive int values
 operator_days = {}
 for day_index in range(day_number):
     operator_day = {}
@@ -70,6 +73,8 @@ for day_index in range(day_number):
     operator_days[f"day{day_index:02}"] = operator_day
 del day_index, operator_day, care_unit_index, care_unit, operator_amount, operator_index
 
+# services creation
+# a service is described by the tuple (name, care_unit, duration, cost)
 services = {}
 for service_index in range(service_number):
     services[f"srv{service_index:02}"] = {
@@ -79,13 +84,15 @@ for service_index in range(service_number):
     }
 del service_index
 
+# packets generation
+# a packet is a subset of all possible services
 packets = {}
 packet_index = 0
 window = packet_number
 size = packet_size[0]
 max_packet_size = packet_size[1]
 while packet_index < packet_number:
-    window //= 2
+    window //= 2 # exponential shrinking of generation windows
     if window == 0: window = 1
     for _ in range(window):
         packet = []
@@ -98,11 +105,14 @@ while packet_index < packet_number:
         size += 1
 del packet_index, window, size, max_packet_size, packet, service_indexes
 
+# assign each patient a priority
 priorities = {}
 for patient_index in range(patient_number):
     priorities[f"pat{patient_index:02}"] = random.randint(patient_priority[0], patient_priority[1])
 del patient_index
 
+# requests are composed by a patient group in which each one requests some packets.
+# requests are divided by day
 requests = {}
 for day_index in range(day_number):
     patient_amount = random.randint(requests_per_day[0], requests_per_day[1])
@@ -119,6 +129,7 @@ for day_index in range(day_number):
     requests[f"day{day_index:02}"] = day_requests
 del day_index, patient_amount, day_requests, patient_index, packet_amount, packet_indexes, packet_index
 
+# list all care_unit that have some operator in it
 care_unit_names = set()
 for operator_day in operator_days.values():
     for care_unit_name in operator_day.keys():
@@ -126,6 +137,7 @@ for operator_day in operator_days.values():
 care_unit_names = sorted(care_unit_names)
 del operator_day, care_unit_name
 
+# group, for each care_unit and for each day, the total duration of its operator
 total_durations = dict()
 for day_name, operator_day in operator_days.items():
     day_duration = dict()
@@ -137,6 +149,7 @@ for day_name, operator_day in operator_days.items():
     total_durations[day_name] = day_duration
 del day_name, operator_day, day_duration, care_unit_name, care_unit, total_duration, operator
 
+# creation of service incompatibility windows
 interdictions = dict()
 for service_index in range(service_number):
     interdiction = dict()
@@ -148,6 +161,7 @@ for service_index in range(service_number):
     interdictions[f"srv{service_index:02}"] = interdiction
 del service_index, interdiction, other_service_index
 
+# generation of service requirements
 necessities = dict()
 for service_index in range(service_number):
     if random.random() < necessity_probability:
@@ -165,6 +179,8 @@ for service_index in range(service_number):
         necessities[f"srv{service_index:02}"] = {}
 del service_index, necessity_amount, necessity_indexes, necessity, necessity_index, start
 
+# protocol creation
+# a protocol has 1+ iterations and each one has 1+ packets repeated at various regular intervals
 protocols = dict()
 protocol_index = 0
 for patient_index in range(patient_number):
@@ -216,6 +232,7 @@ full_input = {
 
 end_time = datetime.now()
 
+# output the instance to json files
 with open("operators.json", "w") as file:
     file.write(json.dumps(operator_days, indent=4, sort_keys=True))
 with open("services.json", "w") as file:
