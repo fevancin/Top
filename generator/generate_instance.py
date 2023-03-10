@@ -193,7 +193,7 @@ for patient_index in range(patient_number):
             packet_index = random.randint(0, packet_number - 1)
             start = random.randint(existence_start[0], existence_start[1])
             packet_list.append({
-                'pacekt_id': f"pkt{packet_index:02}",
+                'packet_id': f"pkt{packet_index:02}",
                 'start_date': random.randint(start_date[0], start_date[1]),
                 'freq': random.randint(frequency[0], frequency[1]),
                 'since': "start_date",
