@@ -38,8 +38,8 @@ for care_unit_name in care_unit_names:
         more_program = ""
         more_total_duration = 0
         for operator_name, operator in more_operators.items():
-            more_program += "more(" + operator_name + ", " + str(operator["start"]) + ", " + str(operator["duration"]) + ").\n"
-            more_total_duration += operator["duration"]
+            more_program += f"more({operator_name}, {operator['start']}, {operator['duration']}).\n"
+            more_total_duration += operator['duration']
         for less_day_name, less_operator_day in operator_days.items():
             if less_day_name == more_day_name:
                 continue
@@ -56,14 +56,14 @@ for care_unit_name in care_unit_names:
             for operator_name, operator in less_operators.items():
                 at_least_one = False
                 for more_operator in more_operators.values():
-                    if operator["start"] >= more_operator["start"] and operator["start"] + operator["duration"] <= more_operator["start"] + more_operator["duration"]:
+                    if operator['start'] >= more_operator['start'] and operator['start'] + operator['duration'] <= more_operator['start'] + more_operator['duration']:
                         at_least_one = True
                         break
                 if not at_least_one:
                     unsatisfiable = True
                     break
-                less_program += "less(" + operator_name + ", " + str(operator["start"]) + ", " + str(operator["duration"]) + ").\n"
-                less_total_duration += operator["duration"]
+                less_program += f"less({operator_name}, {operator['start']}, {operator['duration']}).\n"
+                less_total_duration += operator['duration']
             if unsatisfiable or more_total_duration < less_total_duration:
                 continue
             if len(less_operators) == 1:
@@ -93,4 +93,4 @@ with open("subsumptions.json", "w") as file:
     file.write(json.dumps(subsumptions, indent=4, sort_keys=True))
 
 print("Subsumptions are in the file 'subsumptions.json'")
-print("Time taken: " + str(end_time - start_time))
+print(f"Time taken: {end_time - start_time}")

@@ -39,7 +39,7 @@ for care_unit_name in care_unit_names:
             continue
         more_total_duration = 0
         for operator_name, operator in more_operators.items():
-            more_total_duration += operator["duration"]
+            more_total_duration += operator['duration']
         for less_day_name, less_operator_day in operator_days.items():
             if less_day_name == more_day_name:
                 continue
@@ -55,13 +55,13 @@ for care_unit_name in care_unit_names:
             for operator_name, operator in less_operators.items():
                 at_least_one = False
                 for more_operator in more_operators.values():
-                    if operator["start"] >= more_operator["start"] and operator["start"] + operator["duration"] <= more_operator["start"] + more_operator["duration"]:
+                    if operator['start'] >= more_operator['start'] and operator['start'] + operator['duration'] <= more_operator['start'] + more_operator['duration']:
                         at_least_one = True
                         break
                 if not at_least_one:
                     unsatisfiable = True
                     break
-                less_total_duration += operator["duration"]
+                less_total_duration += operator['duration']
             if unsatisfiable or more_total_duration < less_total_duration:
                 continue
             less_indexes = []
@@ -70,7 +70,7 @@ for care_unit_name in care_unit_names:
             x_indexes = []
             for more_operator_name, more_operator in more_operators.items():
                 for less_operator_name, less_operator in less_operators.items():
-                    if less_operator["start"] >= more_operator["start"] and less_operator["start"] + less_operator["duration"] <= more_operator["start"] + more_operator["duration"]:
+                    if less_operator['start'] >= more_operator['start'] and less_operator['start'] + less_operator['duration'] <= more_operator['start'] + more_operator['duration']:
                         x_indexes.append((less_operator_name, more_operator_name))
             if len(x_indexes) == 1:
                 lesser_days.append(less_day_name)
@@ -81,8 +81,8 @@ for care_unit_name in care_unit_names:
                     less_operator_name1, more_operator_name1 = x_indexes[index1]
                     less_operator_name2, more_operator_name2 = x_indexes[index2]
                     if less_operator_name1 != less_operator_name2 and more_operator_name1 == more_operator_name2:
-                        if (less_operators[less_operator_name1]["start"] <= less_operators[less_operator_name2]["start"] and less_operators[less_operator_name1]["start"] + less_operators[less_operator_name1]["duration"] > less_operators[less_operator_name2]["start"] or
-                            less_operators[less_operator_name2]["start"] <= less_operators[less_operator_name1]["start"] and less_operators[less_operator_name2]["start"] + less_operators[less_operator_name2]["duration"] > less_operators[less_operator_name1]["start"]):
+                        if (less_operators[less_operator_name1]['start'] <= less_operators[less_operator_name2]['start'] and less_operators[less_operator_name1]['start'] + less_operators[less_operator_name1]['duration'] > less_operators[less_operator_name2]['start'] or
+                            less_operators[less_operator_name2]['start'] <= less_operators[less_operator_name1]['start'] and less_operators[less_operator_name2]['start'] + less_operators[less_operator_name2]['duration'] > less_operators[less_operator_name1]['start']):
                             no_overlap_indexes.append((less_operator_name1, less_operator_name2, more_operator_name1))
             model = ConcreteModel()
             model.x_indexes = Set(initialize=x_indexes)
@@ -98,7 +98,7 @@ for care_unit_name in care_unit_names:
             def f2(model, less_index):
                 return sum([model.x[less_index, more_index] for (l, more_index) in model.x_indexes if l == less_index]) == 1
             model.only_one = Constraint(model.less_indexes, rule=f2)
-            opt = SolverFactory('glpk')
+            opt = SolverFactory("glpk")
             results = opt.solve(model)
             if results.solver.termination_condition != TerminationCondition.infeasible:
                 lesser_days.append(less_day_name)
@@ -113,4 +113,4 @@ with open("subsumptions.json", "w") as file:
     file.write(json.dumps(subsumptions, indent=4, sort_keys=True))
 
 print("Subsumptions are in the file 'subsumptions.json'")
-print("Time taken: " + str(end_time - start_time))
+print(f"Time taken: {end_time - start_time}")
