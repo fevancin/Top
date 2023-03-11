@@ -16,6 +16,10 @@ with open("services.json", "r") as file:
     services = json.loads(file.read())
 with open("packets.json", "r") as file:
     packets = json.loads(file.read())
+
+os.chdir("..")
+os.chdir("master")
+
 with open("requests.json", "r") as file:
     requests = json.loads(file.read())
 

@@ -241,10 +241,14 @@ with open("packets.json", "w") as file:
     file.write(json.dumps(packets, indent=4, sort_keys=True))
 with open("priorities.json", "w") as file:
     file.write(json.dumps(priorities, indent=4, sort_keys=True))
-with open("requests.json", "w") as file:
-    file.write(json.dumps(requests, indent=4, sort_keys=True))
 with open("full_input.json", "w") as file:
     file.write(json.dumps(full_input, indent=4, sort_keys=True))
+
+os.chdir("..")
+os.chdir("master")
+
+with open("requests.json", "w") as file:
+    file.write(json.dumps(requests, indent=4, sort_keys=True))
 
 print("Creation of instance successfull. Data is in folder 'instance'")
 print(f"Time taken: {end_time - start_time}")
