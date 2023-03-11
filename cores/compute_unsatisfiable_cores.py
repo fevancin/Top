@@ -16,6 +16,8 @@ with open("services.json", "r") as file:
     services = json.loads(file.read())
 with open("packets.json", "r") as file:
     packets = json.loads(file.read())
+with open("operators.json", "r") as file:
+    operator_days = json.loads(file.read())
 
 os.chdir("..")
 os.chdir("master")
@@ -121,7 +123,7 @@ for day_name, day_results in results.items():
                         'services': service_list
                     }
             core_days = [day_name] # look for days that are lesser than the current one in each care_unit
-            for lesser_day_name in requests.keys():
+            for lesser_day_name in operator_days.keys():
                 if lesser_day_name == day_name:
                     continue
                 is_lesser_day = True
