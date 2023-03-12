@@ -245,6 +245,8 @@ with open("full_input.json", "w") as file:
     file.write(json.dumps(full_input, indent=4, sort_keys=True))
 
 os.chdir("..")
+if not os.path.isdir("master"):
+    os.mkdir("master")
 os.chdir("master")
 
 with open("requests.json", "w") as file:
