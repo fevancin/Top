@@ -1,8 +1,14 @@
 % day(0..D).
+% care_unit_has_capacity(CareUnit, Day, Capacity).
+% packet_has_care_unit_of_size(Packet, CareUnit, Size).
 % patient_has_priority(Patient, Priority).
 % protocol_has_window(Patient, Protocol, Packet, StartWindow, EndWindow).
 
 % { do(Patient, Packet, Day) }. variable for each Packet that can be done in day Day (respecting the care units)
+
+% it's not possible an assignment that require more than a care unit can provide a certain day
+:- care_unit_capacity(CareUnit, Day, Capacity),
+    #sum { Size, Packet, Patient : do(Patient, Packet, Day), packet_has_care_unit_size(Packet, CareUnit, Size) } > Capacity.
 
 % is_window_done/5 becomes true if there is a *single* do/3 in a Day inside its interval [StartWindow, EndWindow]
 { is_window_done(Patient, Protocol, Packet, StartWindow, EndWindow) } :- protocol_has_window(Patient, Protocol, Packet, StartWindow, EndWindow).

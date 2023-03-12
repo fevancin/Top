@@ -22,15 +22,17 @@ os.chdir("master")
 start_time = datetime.now()
 
 days_compatible_with_packet = dict()
-for packet_name, packet in full_input["abstract_packet"].items():
+packet_total_requests = dict()
+for packet_name, packet in full_input['abstract_packet'].items():
     packet_requests = dict()
     for service_name in packet:
-        care_unit_name = full_input["services"][service_name]["careUnit"]
+        care_unit_name = full_input['services'][service_name]['careUnit']
         if care_unit_name not in packet_requests:
             packet_requests[care_unit_name] = 0
-        packet_requests[care_unit_name] += full_input["services"][service_name]["duration"]
+        packet_requests[care_unit_name] += full_input['services'][service_name]['duration']
+    packet_total_requests[packet_name] = packet_requests
     compatibility_days = []
-    for day_name, capacities in full_input["capacity"].items():
+    for day_name, capacities in full_input['capacity'].items():
         is_packet_compatible = True
         for care_unit_name, care_unit_request in packet_requests.items():
             if care_unit_request >= capacities[care_unit_name]:
@@ -44,7 +46,8 @@ del packet_name, packet, packet_requests, service_name, care_unit_name, compatib
 
 days_compatible_with_protocol_packet = dict()
 windows = dict()
-for patient_name, patient in full_input["pat_request"].items():
+packet_names = set()
+for patient_name, patient in full_input['pat_request'].items():
     for protocol_name, protocol in patient.items():
         if protocol_name == "priority_weight":
             continue
@@ -53,12 +56,12 @@ for patient_name, patient in full_input["pat_request"].items():
             initial_shift = iteration[1]
             for protocol_packet in protocol_packets:
                 compatibility_day_indexes = set()
-                start_window_day = protocol_packet["existence"][0]
-                end_window_day = protocol_packet["existence"][1]
-                start_day = protocol_packet["start_date"]
-                tolerance = protocol_packet["tolerance"]
-                packet_name = protocol_packet["packet_id"]
-                for exact_day_index in range(start_day, end_window_day, protocol_packet["freq"]):
+                start_window_day = protocol_packet['existence'][0]
+                end_window_day = protocol_packet['existence'][1]
+                start_day = protocol_packet['start_date']
+                tolerance = protocol_packet['tolerance']
+                packet_name = protocol_packet['packet_id']
+                for exact_day_index in range(start_day, end_window_day, protocol_packet['freq']):
                     if exact_day_index < start_window_day:
                         continue
                     windows[(patient_name, protocol_name, packet_name)] = (start_window_day, end_window_day)
@@ -69,6 +72,7 @@ for patient_name, patient in full_input["pat_request"].items():
                             compatibility_day_indexes.add(day_index)
                 if len(compatibility_day_indexes) == 0:
                     continue
+                packet_names.add(packet_name)
                 if (patient_name, packet_name) in days_compatible_with_protocol_packet:
                     days_compatible_with_protocol_packet[(patient_name, packet_name)].update(compatibility_day_indexes)
                 else:
@@ -79,13 +83,14 @@ input_program = f"day(0..{full_input['horizon']}).\n" # input program of the ASP
 patient_names = set()
 
 # TODO add initial shift when build input in python!!!
-# TODO add constraint for sum of packet dimensions < capacity of the day
 
+day_names = set()
 for (patient_name, packet_name), days in days_compatible_with_protocol_packet.items():
     patient_names.add(patient_name)
-    for day_index in days:
-        input_program += f"{{ do({patient_name}, {packet_name}, {day_index}) }}.\n"
-del patient_name, packet_name, days, day_index, days_compatible_with_protocol_packet
+    for day_name in days:
+        day_names.add(day_name)
+        input_program += f"{{ do({patient_name}, {packet_name}, {day_name}) }}.\n"
+del patient_name, packet_name, days, day_name, days_compatible_with_protocol_packet
 
 for (patient_name, protocol_name, packet_name), (window_start, window_end) in windows.items():
     input_program += f"protocol_has_window({patient_name}, {protocol_name}, {packet_name}, {window_start}, {window_end}).\n"
@@ -94,6 +99,18 @@ del patient_name, protocol_name, packet_name, window_start, window_end, windows
 for patient_name in patient_names:
     input_program += f"patient_has_priority({patient_name}, {full_input['pat_request'][patient_name]['priority_weight']}).\n"
 del patient_name, patient_names
+
+for day_name, capacities in full_input['capacity'].items():
+    if int(day_name) not in day_names:
+        continue
+    for care_unit_name, care_unit_capacity in capacities.items():
+        input_program += f"care_unit_has_capacity({care_unit_name}, {day_name}, {care_unit_capacity}).\n"
+del day_name, capacities, care_unit_name, care_unit_capacity, day_names
+
+for packet_name in packet_names:
+    for care_unit_name, size in packet_total_requests[packet_name].items():
+        input_program += f"packet_has_care_unit_of_size({packet_name}, {care_unit_name}, {size}).\n"
+del packet_name, packet_names, care_unit_name, size, packet_total_requests
 
 with open("input_program.lp", "w") as file:
     file.write(input_program)
