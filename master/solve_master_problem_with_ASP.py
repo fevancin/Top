@@ -82,8 +82,6 @@ del patient_name, patient, protocol_name, protocol, iteration, protocol_packets,
 input_program = f"day(0..{full_input['horizon']}).\n" # input program of the ASP solver
 patient_names = set()
 
-# TODO add initial shift when build input in python!!!
-
 day_names = set()
 for (patient_name, packet_name), days in days_compatible_with_protocol_packet.items():
     patient_names.add(patient_name)
