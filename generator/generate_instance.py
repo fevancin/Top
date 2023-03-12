@@ -70,7 +70,7 @@ for day_index in range(day_number):
                 'duration': random.randint(operator_duration[0], operator_duration[1])
             }
         operator_day[f"cu{care_unit_index:02}"] = care_unit
-    operator_days[f"day{day_index:02}"] = operator_day
+    operator_days[str(day_index)] = operator_day
 del day_index, operator_day, care_unit_index, care_unit, operator_amount, operator_index
 
 # services creation
@@ -126,7 +126,7 @@ for day_index in range(day_number):
         day_requests[f"pat{patient_index:02}"] = {
             'packets': sorted(request)
         }
-    requests[f"day{day_index:02}"] = day_requests
+    requests[str(day_index)] = day_requests
 del day_index, patient_amount, day_requests, patient_index, packet_amount, packet_indexes, packet_index
 
 # list all care_unit that have some operator in it
@@ -188,9 +188,9 @@ for patient_index in range(patient_number):
     patient_protocols = dict()
     for _ in range(protocol_amount):
         packet_amount = random.randint(packets_per_protocol[0], packets_per_protocol[1])
+        packet_indexes = random.sample(range(packet_number), packet_amount)
         packet_list = []
-        for _ in range(packet_amount):
-            packet_index = random.randint(0, packet_number - 1)
+        for packet_index in packet_indexes:
             start = random.randint(existence_start[0], existence_start[1])
             packet_list.append({
                 'packet_id': f"pkt{packet_index:02}",
